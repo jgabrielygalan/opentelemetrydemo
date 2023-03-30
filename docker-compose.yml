@@ -1,0 +1,28 @@
+version: "3.0"
+
+services:
+  api-service:
+    image: oteldemo/api-service
+    ports:
+      - "8080:8080"
+
+  product-service:
+    image: oteldemo/product-service
+    ports:
+      - "9090:8080"
+
+  collector:
+    image: otel/opentelemetry-collector:0.72.0
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./otel-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"
+    depends_on:
+      - jaeger-service
+
+  jaeger-service:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14250"
